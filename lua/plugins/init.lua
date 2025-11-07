@@ -4,39 +4,58 @@ return {
     -- event = 'BufWritePre', -- uncomment for format on save
     opts = require "configs.conform",
   },
-
-  -- These are some examples, uncomment them if you want to see them work!
   {
     "neovim/nvim-lspconfig",
     config = function()
       require "configs.lspconfig"
     end,
   },
-{
-  "mrcjkb/rustaceanvim",
-  version = "^5",
-  ft = { "rust" },
-  config = function()
-    vim.g.rustaceanvim = {
-      tools = {},  -- optional extra Rust tools
-      server = {}, -- optional LSP settings
-      dap = {},    -- Mason handles codelldb automatically
-    }
-  end,
-},
-
-{
-  "rust-lang/rust.vim",
-  ft = "rust",
-  init = function()
-    vim.g.rustfmt_autosave = 1
-  end,
- },
-
+  {
+    "mrcjkb/rustaceanvim",
+    version = "^5",
+    ft = { "rust" },
+    config = function()
+      vim.g.rustaceanvim = {
+        tools = {},
+        server = {
+          on_attach = function(client, bufnr)
+            -- Enable inlay hints when LSP attaches
+            if client.server_capabilities.inlayHintProvider then
+              vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+            end
+          end,
+          default_settings = {
+            ['rust-analyzer'] = {
+              inlayHints = {
+                bindingModeHints = { enable = true },
+                chainingHints = { enable = true },
+                closingBraceHints = { enable = true, minLines = 25 },
+                closureReturnTypeHints = { enable = "always" },
+                lifetimeElisionHints = { enable = "always", useParameterNames = true },
+                maxLength = 25,
+                parameterHints = { enable = true },
+                reborrowHints = { enable = "always" },
+                renderColons = true,
+                typeHints = { enable = true, hideNamedConstructor = false },
+              },
+            },
+          },
+        },
+        dap = {},
+      }
+    end,
+  },
+  {
+    "rust-lang/rust.vim",
+    ft = "rust",
+    init = function()
+      vim.g.rustfmt_autosave = 1
+    end,
+  },
   {
     'mfussenegger/nvim-dap',
     config = function()
-			local dap, dapui = require("dap"), require("dapui")
+      local dap, dapui = require("dap"), require("dapui")
       dap.listeners.before.attach.dapui_config = function()
         dapui.open()
       end
@@ -49,17 +68,15 @@ return {
       dap.listeners.before.event_exited.dapui_config = function()
         dapui.close()
       end
-		end,
+    end,
   },
-
   {
     'rcarriga/nvim-dap-ui', 
     dependencies = {"mfussenegger/nvim-dap", "nvim-neotest/nvim-nio"},
     config = function()
-			require("dapui").setup()
-		end,
+      require("dapui").setup()
+    end,
   },
-
   {
     'saecki/crates.nvim',
     ft = {"toml"},
@@ -76,14 +93,4 @@ return {
       })
     end
   },
-
-  -- {
-  -- 	"nvim-treesitter/nvim-treesitter",
-  -- 	opts = {
-  -- 		ensure_installed = {
-  -- 			"vim", "lua", "vimdoc",
-  --      "html", "css"
-  -- 		},
-  -- 	},
-  -- },
 }
