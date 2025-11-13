@@ -11,47 +11,57 @@ return {
     end,
   },
   {
-    "mrcjkb/rustaceanvim",
-    version = "^5",
-    ft = { "rust" },
-    config = function()
-      vim.g.rustaceanvim = {
-        tools = {},
-        server = {
-          on_attach = function(client, bufnr)
-            -- Enable inlay hints when LSP attaches
-            if client.server_capabilities.inlayHintProvider then
-              vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-            end
-          end,
-          default_settings = {
-            ['rust-analyzer'] = {
-              inlayHints = {
-                bindingModeHints = { enable = true },
-                chainingHints = { enable = true },
-                closingBraceHints = { enable = true, minLines = 25 },
-                closureReturnTypeHints = { enable = "always" },
-                lifetimeElisionHints = { enable = "always", useParameterNames = true },
-                maxLength = 25,
-                parameterHints = { enable = true },
-                reborrowHints = { enable = "always" },
-                renderColons = true,
-                typeHints = { enable = true, hideNamedConstructor = false },
-              },
-            },
-          },
-        },
-        dap = {},
-      }
-    end,
-  },
-  {
     "rust-lang/rust.vim",
     ft = "rust",
     init = function()
       vim.g.rustfmt_autosave = 1
     end,
   },
+  {
+    "mrcjkb/rustaceanvim",
+      version = "^5",
+      ft = { "rust" },
+      config = function()
+        vim.g.rustaceanvim = {
+          tools = {},
+          server = {
+            on_attach = function(client, bufnr)
+              -- Disable inlay hints by default
+              if client.server_capabilities.inlayHintProvider then
+                vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
+              end
+            end,
+            default_settings = {
+              ['rust-analyzer'] = {
+                -- Enable diagnostics
+                checkOnSave = true,
+                check = {
+                  command = "clippy",
+                },
+                diagnostics = {
+                  enable = true,
+                  disabled = {},
+                  enableExperimental = true,
+                },
+                inlayHints = {
+                  bindingModeHints = { enable = true },
+                  chainingHints = { enable = true },
+                  closingBraceHints = { enable = true, minLines = 25 },
+                  closureReturnTypeHints = { enable = "always" },
+                  lifetimeElisionHints = { enable = "always", useParameterNames = true },
+                  maxLength = 25,
+                  parameterHints = { enable = true },
+                  reborrowHints = { enable = "always" },
+                  renderColons = true,
+                  typeHints = { enable = true, hideNamedConstructor = false },
+                },
+              },
+            },
+          },
+          dap = {},
+        }
+      end,
+},
   {
     'mfussenegger/nvim-dap',
     config = function()
