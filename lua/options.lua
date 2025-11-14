@@ -6,6 +6,7 @@ require "nvchad.options"
 -- Force enable diagnostics and virtual text
 vim.diagnostic.enable()
 vim.opt.relativenumber = true
+vim.g.gui_font_ligatures = 0
 
 vim.diagnostic.config({
   virtual_text = {
